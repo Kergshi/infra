@@ -5,7 +5,7 @@ CREATE DATABASE users WITH ENCODING = 'UTF8';
 
 CREATE TABLE users (
 	id BIGSERIAL PRIMARY KEY,
-	name VARCHAR(255),
+	name VARCHAR(255) NOT NULL,
 	email VARCHAR(255),
 	phone VARCHAR(30)
 );
@@ -17,21 +17,26 @@ CREATE DATABASE orders WITH ENCODING = 'UTF8';
 
 \connect orders;
 
-CREATE TYPE order_status AS ENUM ('collecting', 'inpaid', 'delivering', 'delivered');
+CREATE TYPE order_status AS ENUM ('Assemble', 'Payment', 'Delivery', 'Delivered');
 
 CREATE TABLE orders (
 	id BIGSERIAL PRIMARY KEY,
 	user_id BIGINT NOT NULL,
 	address VARCHAR(255) NOT NULL,
 	totalcost NUMERIC NOT NULL,
-	status order_status
+    created_at TIMESTAMP NOT NULL,
+    completed_at TIMESTAMP,
+	status order_status NOT NULL
 );
 
 CREATE TABLE order_foods (
 	order_id BIGINT REFERENCES orders(id) NOT NULL,
 	food_id BIGINT NOT NULL,
-	amount BIGINT NOT NULL
+	amount BIGINT NOT NULL,
+	UNIQUE (order_id, food_id)
 );
+
+CREATE CAST (VARCHAR AS order_status) WITH INOUT AS IMPLICIT;
 
 --------------- PAYMENTS  ---------------------------
 
